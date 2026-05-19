@@ -1,0 +1,61 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String
+  workouts     Workout[]
+}
+
+model Workout {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      Int
+  exercises   Exercise[]
+  workoutTags WorkoutTag[]
+}
+
+model Exercise {
+  id        Int           @id @default(autoincrement())
+  name      String
+  workout   Workout       @relation(fields: [workoutId], references: [id])
+  workoutId Int
+  sets      ExerciseSet[]
+}
+
+model ExerciseSet {
+  id         Int      @id @default(autoincrement())
+  setNumber  Int
+  reps       Int?
+  weight     Float?
+  time       Float?
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+}
+
+model Tag {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  workoutTags WorkoutTag[]
+}
+
+model WorkoutTag {
+  workout   Workout @relation(fields: [workoutId], references: [id])
+  workoutId Int
+  tag       Tag     @relation(fields: [tagId], references: [id])
+  tagId     Int
+
+  @@id([workoutId, tagId])
+}
