@@ -21,7 +21,7 @@ model Workout {
   title       String
   description String?
   createdAt   DateTime     @default(now())
-  user        User         @relation(fields: [userId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   exercises   Exercise[]
   workoutTags WorkoutTag[]
@@ -30,7 +30,7 @@ model Workout {
 model Exercise {
   id        Int           @id @default(autoincrement())
   name      String
-  workout   Workout       @relation(fields: [workoutId], references: [id])
+  workout   Workout       @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   workoutId Int
   sets      ExerciseSet[]
 }
@@ -41,7 +41,7 @@ model ExerciseSet {
   reps       Int?
   weight     Float?
   time       Float?
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId Int
 }
 
@@ -52,9 +52,9 @@ model Tag {
 }
 
 model WorkoutTag {
-  workout   Workout @relation(fields: [workoutId], references: [id])
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   workoutId Int
-  tag       Tag     @relation(fields: [tagId], references: [id])
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
   tagId     Int
 
   @@id([workoutId, tagId])

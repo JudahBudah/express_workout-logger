@@ -44,4 +44,41 @@ router.get('/:id', authenticate, async (req, res) => {
   res.json(workout)
 })
 
+// POST /workouts - create workout
+router.post('/', authenticate, async (req, res) => {
+  const { title, description } = req.body
+
+  const workout = await db.workout.create({
+    data: {
+      title,
+      description,
+      userId: req.user!.id
+    }
+  })
+
+  res.status(201).json(workout)
+})
+
+// DELETE /workouts/:id - delete workout
+router.delete('/:id', authenticate, async (req, res) => {
+  const workout = await db.workout.findFirst({
+    where: {
+      id: Number(req.params.id),
+      userId: req.user!.id
+    }
+  })
+
+  if (!workout) {
+    res.status(404).json({ message: 'Workout not found' })
+    return
+  }
+
+  await db.workout.delete({
+    where: { id: Number(req.params.id) }
+  })
+
+  res.json({ message: 'Workout deleted' })
+})
+
+
 export default router
