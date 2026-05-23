@@ -51,8 +51,7 @@ router.delete('/exercises/:id', authenticate, async (req, res) => {
   res.json({ message: 'Exercise deleted' })
 })
 
-export default router
-
+// Set Routes
 
 // POST /exercises/:id/sets - add set to exercise
 router.post('/exercises/:id/sets', authenticate, async (req, res) => {
@@ -83,6 +82,27 @@ router.post('/exercises/:id/sets', authenticate, async (req, res) => {
   res.status(201).json(set)
 })
 
+// DELETE /sets/:id - delete set
+router.delete('/sets/:id', authenticate, async (req, res) => {
+  const set = await db.exerciseSet.findFirst({
+    where: {
+      id: Number(req.params.id),
+      exercise: { workout: { userId: req.user!.id }}
+    }
+  })
+
+  if (!set) {
+    res.status(404).json({ message: 'Set not found' })
+    return
+  }
+
+  await db.exerciseSet.delete({
+    where: { id: Number(req.params.id) }
+  })
+
+  res.json({ message: 'Set deleted' })
+})
+
 // DELETE /exercises/:id/sets - delete all sets from exercise
 router.delete('/exercises/:id/sets', authenticate, async (req, res) => {
   const exercise = await db.exercise.findFirst({
@@ -103,3 +123,5 @@ router.delete('/exercises/:id/sets', authenticate, async (req, res) => {
 
   res.json({ message: 'Sets deleted' })
 })
+
+export default router
