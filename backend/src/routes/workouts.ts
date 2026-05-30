@@ -48,6 +48,11 @@ router.get('/:id', authenticate, async (req, res) => {
 router.post('/', authenticate, async (req, res) => {
   const { title, description } = req.body
 
+  if (!title) {
+    res.status(400).json({ message: 'Title is required' })
+    return
+  }
+
   const workout = await db.workout.create({
     data: {
       title,
