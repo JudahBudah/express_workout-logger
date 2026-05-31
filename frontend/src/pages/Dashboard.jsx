@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
+import WorkoutCard from '../components/WorkoutCard'
 
 function Dashboard() {
   const [workouts, setWorkouts] = useState([])
@@ -67,11 +68,11 @@ function Dashboard() {
       </form>
 
       {workouts.map(workout => (
-        <div key={workout.id}>
-          <h2>{workout.title}</h2>
-          <p>{workout.description}</p>
-          <button onClick={() => handleDeleteWorkout(workout.id)}>Delete</button>
-        </div>
+        <WorkoutCard
+          key={workout.id}
+          workout={workout}
+          onDelete={handleDeleteWorkout}
+        />
       ))}
     </div>
   )
