@@ -6,6 +6,7 @@ function WorkoutDetail() {
   const [workout, setWorkout] = useState(null)
   const [exerciseName, setExerciseName] = useState('')
   const [setInputs, setSetInputs] = useState({})
+  const [tagName, setTagName] = useState('')
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -49,7 +50,8 @@ function WorkoutDetail() {
 
 
   // Set handlers
-  const handleAddSet = async (exerciseId) => {
+  const handleAddSet = async (e, exerciseId) => {
+    e.preventDefault()
     const input = setInputs[exerciseId] || {}
     try {
       const response = await api.post(`/exercises/${exerciseId}/sets`, {
@@ -87,16 +89,64 @@ function WorkoutDetail() {
     }
   }
 
+
+  // Tag handlers
+  const handleAddTag = async (e) => {
+    e.preventDefault()
+    if (!tagName) return
+    try {
+      const response = await api.post(`/workouts/${id}/tags`, { name: tagName })
+      setWorkout({
+        ...workout,
+        workoutTags: [...workout.workoutTags, { tag: response.data, tagId: response.data.id, workoutId: Number(id) }]
+      })
+      setTagName('')
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleDeleteTag = async (tagId) => {
+    try {
+      await api.delete(`/workouts/${id}/tags/${tagId}`)
+      setWorkout({
+        ...workout,
+        workoutTags: workout.workoutTags.filter(wt => wt.tagId !== tagId)
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   if (!workout) return <p>Loading...</p>
 
   return (
-    <div>
+    <>
       <button onClick={() => navigate('/dashboard')}>Back</button>
       <h1>{workout.title}</h1>
       <p>{workout.description}</p>
 
-      <h2>Exercises</h2>
+      {/* Tags */}
+      <h2>Tags</h2>
+      <form onSubmit={handleAddTag}>
+        <input
+          type='text'
+          placeholder='Tag name'
+          value={tagName}
+          onChange={(e) => setTagName(e.target.value)}
+        />
+        <button type='submit'>Add Tag</button>
+      </form>
 
+      {workout.workoutTags.map(wt => (
+        <div key={wt.tagId}>
+          <p>{wt.tag.name}</p>
+          <button onClick={() => handleDeleteTag(wt.tagId)}>Remove</button>
+        </div>
+      ))}
+
+      {/* Exercises */}
+      <h2>Exercises</h2>
       <form onSubmit={handleAddExercise}>
         <input
           type='text'
@@ -107,34 +157,39 @@ function WorkoutDetail() {
         <button type='submit'>Add Exercise</button>
       </form>
 
+      {/* Sets */}
       {workout.exercises.map(exercise => (
         <div key={exercise.id}>
           <h3>{exercise.name}</h3>
           <button onClick={() => handleDeleteExercise(exercise.id)}>Delete Exercise</button>
 
-          <div>
+          <form onSubmit={(e) => handleAddSet(e, exercise.id)}>
             <input
               type='number'
               placeholder='Set number'
+              value={setInputs[exercise.id]?.setNumber || ''}
               onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], setNumber: e.target.value }})}
             />
             <input
               type='number'
               placeholder='Reps'
+              value={setInputs[exercise.id]?.reps || ''}
               onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], reps: e.target.value }})}
             />
             <input
               type='number'
               placeholder='Weight'
+              value={setInputs[exercise.id]?.weight || ''}
               onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], weight: e.target.value }})}
             />
             <input
               type='number'
               placeholder='Time'
+              value={setInputs[exercise.id]?.time || ''}
               onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], time: e.target.value }})}
             />
-            <button onClick={() => handleAddSet(exercise.id)}>Add Set</button>
-          </div>
+            <button type='submit'>Add Set</button>
+          </form>
 
           {exercise.sets.map(set => (
             <div key={set.id}>
@@ -144,7 +199,8 @@ function WorkoutDetail() {
           ))}
         </div>
       ))}
-    </div>
-  )}
+    </>
+  )
+}
 
 export default WorkoutDetail
