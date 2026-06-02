@@ -6,7 +6,7 @@
   "main": "index.js",
 "scripts": {
   "dev": "tsx watch index.ts",
-  "start": "prisma migrate deploy && tsx index.ts"
+  "start": "prisma db push && tsx index.ts"
 },
   "keywords": [],
   "author": "",
