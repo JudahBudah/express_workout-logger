@@ -40,7 +40,6 @@ function WorkoutDetail() {
         exercises: [...workout.exercises, { ...response.data, sets: [] }]
       })
       setExerciseName('')
-      console.log(response.data)
     } catch (err) {
       console.log(err)
     }
