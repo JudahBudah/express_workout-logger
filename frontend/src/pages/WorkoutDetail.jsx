@@ -37,9 +37,10 @@ function WorkoutDetail() {
       const response = await api.post(`/workouts/${id}/exercises`, { name: exerciseName })
       setWorkout({
         ...workout,
-        exercises: [...workout.exercises, response.data]
+        exercises: [...workout.exercises, { ...response.data, sets: [] }]
       })
       setExerciseName('')
+      console.log(response.data)
     } catch (err) {
       console.log(err)
     }
