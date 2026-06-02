@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import api from '../api/axios'
-import { MdOutlineEmail } from "react-icons/md";
-import { MdLockOutline } from "react-icons/md";
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -22,38 +20,58 @@ function Login() {
   }
 
   return (
-    <div className='bg-zinc-900 flex items-center justify-center h-screen text-white'>
-      <div className='bg-zinc-800 p-8 px-14 rounded-lg shadow-md w-full max-w-md flex flex-col gap-4 items-center'>
-        <h1 className='text-center text-3xl font-bold'>Login</h1>
-        {error && <p className='text-red-600'>{error}</p>}
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4 items-center w-full'>
-          <div className='w-full'>
-            <MdOutlineEmail className='absolute text-2xl text-zinc-400 mt-2 ml-2 z-10' />
-            <input
-              type='email'
-              placeholder='Email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className='bg-zinc-700 p-2 pl-10 rounded-md outline-0 w-full relative'
-            />
-          </div>
-          <div className='w-full'>
-            <MdLockOutline className='absolute text-2xl text-zinc-400 mt-2 ml-2 z-10' />
-            <input
-              type='password'
-              placeholder='Password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className='bg-zinc-700 p-2 pl-10 rounded-md outline-0 w-full relative'
-            />
-          </div>
-          <button type='submit' className='bg-orange-500 w-60 text-[1.2rem] p-1 rounded-md cursor-pointer items-center mt-2'>Login</button>
-        </form>
-        <p>New user?
-          <a onClick={() => navigate('/register')} className='cursor-pointer text-blue-600 text-center pl-2'>
-            Create an account here
-          </a>
-        </p>
+    <div className='min-h-screen bg-zinc-900 flex items-center justify-center px-4'>
+      <div className='w-full max-w-md'>
+
+        
+
+        <div className='bg-zinc-800 rounded-2xl p-8 shadow-xl border border-zinc-700'>
+          <h2 className='text-white text-xl font-bold mb-6'>Sign In</h2>
+
+          {error && (
+            <div className='bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-3 mb-6'>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div>
+              <label className='text-zinc-400 text-sm mb-1 block'>Email</label>
+              <input
+                type='email'
+                placeholder='you@example.com'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className='w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors'
+              />
+            </div>
+
+            <div>
+              <label className='text-zinc-400 text-sm mb-1 block'>Password</label>
+              <input
+                type='password'
+                placeholder='••••••••'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className='w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors'
+              />
+            </div>
+
+            <button
+              type='submit'
+              className='w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors mt-2 curesor-pointer'
+            >
+              Sign In
+            </button>
+          </form>
+
+          <p className='text-zinc-500 text-sm text-center mt-6'>
+            No account?{' '}
+            <a onClick={() => navigate('/register')}  className='text-orange-400 hover:text-orange-300 ml-1 font-medium cursor-pointer'>
+              Sign-in here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   )

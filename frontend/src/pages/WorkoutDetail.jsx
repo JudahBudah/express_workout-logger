@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
+import Header from '../components/Header'
 
 function WorkoutDetail() {
   const [workout, setWorkout] = useState(null)
@@ -16,6 +17,10 @@ function WorkoutDetail() {
       .catch(() => navigate('/dashboard'))
   }, [id])
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/')
+  }
 
   // Exercise handlers
   const handleAddExercise = async (e) => {
@@ -121,29 +126,40 @@ function WorkoutDetail() {
   if (!workout) return <p>Loading...</p>
 
   return (
-    <>
-      <button onClick={() => navigate('/dashboard')}>Back</button>
-      <h1>{workout.title}</h1>
-      <p>{workout.description}</p>
+    <div className='bg-zinc-900 min-h-screen text-white px-20 pt-19'>
+      <Header onLogout={handleLogout} />
 
-      {/* Tags */}
-      <h2>Tags</h2>
-      <form onSubmit={handleAddTag}>
-        <input
-          type='text'
-          placeholder='Tag name'
-          value={tagName}
-          onChange={(e) => setTagName(e.target.value)}
-        />
-        <button type='submit'>Add Tag</button>
-      </form>
+      <button onClick={() => navigate('/dashboard')} className='bg-orange-500 px-3 rounded-md cursor-pointer'>Back</button>
 
-      {workout.workoutTags.map(wt => (
-        <div key={wt.tagId}>
-          <p>{wt.tag.name}</p>
-          <button onClick={() => handleDeleteTag(wt.tagId)}>Remove</button>
+      <div className='my-6 bg-zinc-700/50 p-6 rounded-md'>
+        <h1 className='font-bold text-3xl'>{workout.title}</h1>
+        <p className='text-gray-400'>{workout.description}</p>
+
+        {/* Tags */}
+        <div className='flex items-center gap-2 mt-4'>
+          {workout.workoutTags.map(wt => (
+            <div key={wt.tagId}>
+              <p className='bg-orange-500/20 rounded-md text-center p-1 px-2'>{wt.tag.name}
+              </p>
+
+              <button onClick={() => handleDeleteTag(wt.tagId)} 
+              className='hidden bg-red-500 p-1 px-2 rounded-md cursor-pointer items-center ml-auto mt-2.5'>Remove
+              </button>
+            </div>
+          ))}
+
+          <form onSubmit={handleAddTag} className='flex gap-2'>
+            <input
+              type='text'
+              placeholder='Tag name'
+              value={tagName}
+              onChange={(e) => setTagName(e.target.value)}
+              className='bg-zinc-700 p-1 pl-2 w-20 rounded-md outline-0 text-[0.9rem]'
+            />
+            <button type='submit' className='bg-orange-500 px-3 rounded-md cursor-pointer'>Add Tag</button>
+          </form>
         </div>
-      ))}
+      </div>
 
       {/* Exercises */}
       <h2>Exercises</h2>
@@ -199,7 +215,7 @@ function WorkoutDetail() {
           ))}
         </div>
       ))}
-    </>
+    </div>
   )
 }
 
