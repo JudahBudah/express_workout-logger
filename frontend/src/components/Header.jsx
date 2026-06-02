@@ -4,7 +4,7 @@ function Header({ onLogout }) {
       <h1 className='text-2xl font-black text-white tracking-tight'>Workout Logger</h1>
       <button
         onClick={onLogout}
-        className='text-zinc-400 hover:text-red-400 text-sm font-medium transition-colors'
+        className='text-zinc-400 hover:text-red-400 text-sm font-medium transition-colors cursor-pointer'
       >
         Sign Out
       </button>

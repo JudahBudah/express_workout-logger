@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import Header from '../components/Header'
+import { FaPlus } from 'react-icons/fa6'
+import { LiaTimesSolid } from 'react-icons/lia'
+import { FaTag } from 'react-icons/fa'
+import { FaTrash } from 'react-icons/fa'
 
 function WorkoutDetail() {
   const [workout, setWorkout] = useState(null)
@@ -126,93 +130,128 @@ function WorkoutDetail() {
   if (!workout) return <p>Loading...</p>
 
   return (
-    <div className='bg-zinc-900 min-h-screen text-white px-20 pt-19'>
+    <div className='bg-zinc-900 min-h-screen text-white p-20'>
       <Header onLogout={handleLogout} />
 
       <button onClick={() => navigate('/dashboard')} className='bg-orange-500 px-3 rounded-md cursor-pointer'>Back</button>
 
-      <div className='my-6 bg-zinc-700/50 p-6 rounded-md'>
+      <div className='bg-zinc-800 border border-zinc-700 rounded-2xl p-6 my-6'>
         <h1 className='font-bold text-3xl'>{workout.title}</h1>
         <p className='text-gray-400'>{workout.description}</p>
 
         {/* Tags */}
-        <div className='flex items-center gap-2 mt-4'>
+        <div className='flex flex-wrap items-center gap-2 mt-4'>
           {workout.workoutTags.map(wt => (
-            <div key={wt.tagId}>
-              <p className='bg-orange-500/20 rounded-md text-center p-1 px-2'>{wt.tag.name}
+            <div key={wt.tagId} className='group relative'>
+              <p className='group-hover:invisible bg-orange-500/20 rounded-md text-center py-1 px-2 '>{wt.tag.name}
               </p>
 
               <button onClick={() => handleDeleteTag(wt.tagId)} 
-              className='hidden bg-red-500 p-1 px-2 rounded-md cursor-pointer items-center ml-auto mt-2.5'>Remove
+              className='group-hover:flex hidden absolute inset-0 bg-red-500/30 rounded-md justify-center items-center cursor-pointer'><LiaTimesSolid />
               </button>
             </div>
           ))}
 
-          <form onSubmit={handleAddTag} className='flex gap-2'>
+          <form onSubmit={handleAddTag} className='flex items-center bg-zinc-900 border border-zinc-700 rounded-lg overflow-hidden focus-within:border-orange-500 transition-colors'>
+            <FaTag className='text-zinc-500 ml-3 shrink-0' size={13} />
             <input
               type='text'
               placeholder='Tag name'
               value={tagName}
               onChange={(e) => setTagName(e.target.value)}
-              className='bg-zinc-700 p-1 pl-2 w-20 rounded-md outline-0 text-[0.9rem]'
+              className='bg-transparent text-white text-sm px-2.5 py-2.5 outline-none w-36 placeholder:text-zinc-500'
             />
-            <button type='submit' className='bg-orange-500 px-3 rounded-md cursor-pointer'>Add Tag</button>
+            <button
+              type='submit'
+              className='flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-3.5 h-full py-2.5 transition-colors cursor-pointer shrink-0'>
+              <FaPlus size={11} />
+              Add tag
+            </button>
           </form>
         </div>
       </div>
 
       {/* Exercises */}
-      <h2>Exercises</h2>
-      <form onSubmit={handleAddExercise}>
+      <h2 className='font-bold text-3xl mb-3'>Exercises</h2>
+      <form onSubmit={handleAddExercise} className='flex gap-3 mb-5'>
         <input
           type='text'
           placeholder='Exercise name'
           value={exerciseName}
           onChange={(e) => setExerciseName(e.target.value)}
+          className='bg-zinc-900 border border-zinc-700 text-white rounded-lg w-60 px-4 py-2.5 text-sm outline-none focus:border-orange-500 transition-colors'
         />
-        <button type='submit'>Add Exercise</button>
+        <button type='submit' className='bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap cursor-pointer'>Add Exercise</button>
       </form>
 
       {/* Sets */}
       {workout.exercises.map(exercise => (
-        <div key={exercise.id}>
-          <h3>{exercise.name}</h3>
-          <button onClick={() => handleDeleteExercise(exercise.id)}>Delete Exercise</button>
+        <div key={exercise.id} className='mb-8'>
 
-          <form onSubmit={(e) => handleAddSet(e, exercise.id)}>
-            <input
-              type='number'
-              placeholder='Set number'
-              value={setInputs[exercise.id]?.setNumber || ''}
-              onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], setNumber: e.target.value }})}
-            />
-            <input
-              type='number'
-              placeholder='Reps'
-              value={setInputs[exercise.id]?.reps || ''}
-              onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], reps: e.target.value }})}
-            />
-            <input
-              type='number'
-              placeholder='Weight'
-              value={setInputs[exercise.id]?.weight || ''}
-              onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], weight: e.target.value }})}
-            />
-            <input
-              type='number'
-              placeholder='Time'
-              value={setInputs[exercise.id]?.time || ''}
-              onChange={(e) => setSetInputs({ ...setInputs, [exercise.id]: { ...setInputs[exercise.id], time: e.target.value }})}
-            />
-            <button type='submit'>Add Set</button>
+          {/* Exercise header */}
+          <div className='flex items-center justify-between mb-3'>
+            <h3 className='text-xl font-bold text-white'>{exercise.name}</h3>
+            <button
+              onClick={() => handleDeleteExercise(exercise.id)}
+              className='text-zinc-500 hover:text-red-400 text-sm transition-colors cursor-pointer'
+            >
+              Remove
+            </button>
+          </div>
+
+          {/* Add set form */}
+          <form onSubmit={(e) => handleAddSet(e, exercise.id)} className='flex gap-2 mb-4 flex-wrap'>
+            {[
+              { key: 'setNumber', placeholder: 'Set #' },
+              { key: 'reps',      placeholder: 'Reps'  },
+              { key: 'weight',    placeholder: 'Weight' },
+              { key: 'time',      placeholder: 'Time'   },
+            ].map(({ key, placeholder }) => (
+              <input
+                key={key}
+                type='number'
+                placeholder={placeholder}
+                value={setInputs[exercise.id]?.[key] || ''}
+                onChange={(e) => setSetInputs({
+                  ...setInputs,
+                  [exercise.id]: { ...setInputs[exercise.id], [key]: e.target.value }
+                })}
+                className='min-w-40 flex-1 bg-zinc-900 border border-zinc-700 text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:border-orange-500 transition-colors'
+              />
+            ))}
+            <button
+              type='submit'
+              className='bg-orange-500 hover:bg-orange-600 text-white font-medium px-4 py-2.5 rounded-lg text-sm transition-all whitespace-nowrap cursor-pointer'
+            >
+              Add Set
+            </button>
           </form>
 
-          {exercise.sets.map(set => (
-            <div key={set.id}>
-              <p>Set {set.setNumber} — Reps: {set.reps} Weight: {set.weight} Time: {set.time}</p>
-              <button onClick={() => handleDeleteSet(exercise.id, set.id)}>Delete Set</button>
+          {/* Sets list */}
+          {exercise.sets.length > 0 && (
+            <div className='flex flex-col gap-1'>
+              {exercise.sets.map(set => (
+                <div key={set.id} className='flex items-center justify-between bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5'>
+                  <span className='text-sm text-zinc-300'>
+                    <span className='text-white font-medium'>Set {set.setNumber}</span>
+                    <span className='text-zinc-600 mx-2'>·</span>
+                    {set.reps} reps
+                    <span className='text-zinc-600 mx-2'>·</span>
+                    {set.weight} kg
+                    <span className='text-zinc-600 mx-2'>·</span>
+                    {set.time}s
+                  </span>
+                  <button
+                    onClick={() => handleDeleteSet(exercise.id, set.id)}
+                    className='text-zinc-600 hover:text-red-400 text-sm transition-colors cursor-pointer'
+                  >
+                    <FaTrash size={11} />
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
         </div>
       ))}
     </div>
