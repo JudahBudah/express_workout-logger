@@ -68,7 +68,7 @@ function Login() {
           <p className='text-zinc-500 text-sm text-center mt-6'>
             No account?{' '}
             <a onClick={() => navigate('/register')}  className='text-orange-400 hover:text-orange-300 ml-1 font-medium cursor-pointer'>
-              Sign-in here
+              Sign-up here
             </a>
           </p>
         </div>
